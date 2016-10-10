@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sam_chordas.android.stockhawk.R;
@@ -61,8 +62,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
     NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-    isConnected = activeNetwork != null &&
-        activeNetwork.isConnectedOrConnecting();
+    isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     setContentView(R.layout.activity_my_stocks);
     // The intent service is for executing immediate pulls from the Yahoo API
     // GCMTaskService can only schedule tasks, they cannot execute immediately
@@ -88,6 +88,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 // do something on item click
               }
             }));
+
+
     recyclerView.setAdapter(mCursorAdapter);
 
 
@@ -216,6 +218,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
     mCursor = data;
+    TextView tv = (TextView) findViewById(R.id.listview_quotes_empty);
+    if(mCursorAdapter.getItemCount() == 0){
+
+      int message = R.string.empty_quotes;
+      if(!isConnected){
+          message = R.string.network_toast;
+      }
+      tv.setText(message);
+    }
+    else{
+      tv.setVisibility(View.INVISIBLE);
+    }
   }
 
   @Override
