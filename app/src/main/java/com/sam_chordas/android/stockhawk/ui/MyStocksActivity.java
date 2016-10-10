@@ -218,6 +218,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
     mCursor = data;
+    //Dixit:Handling the No Network Message using Empty View
     TextView tv = (TextView) findViewById(R.id.listview_quotes_empty);
     if(mCursorAdapter.getItemCount() == 0){
 
