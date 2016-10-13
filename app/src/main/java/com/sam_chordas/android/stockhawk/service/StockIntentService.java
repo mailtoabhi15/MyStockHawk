@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,25 +38,35 @@ public class StockIntentService extends IntentService {
   }
 
   void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                              int appWidgetId) {
+                              int[] appWidgetIds) {
 
     Cursor c =context.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-            new String[] { "Distinct " + QuoteColumns.SYMBOL }, null,
-            null, null);
-    if (c != null && c.getCount() != 0) {
-
+            new String[] {QuoteColumns.SYMBOL }, null,
+            null,null);
+    if (c == null )
+      return;
+    String dump = DatabaseUtils.dumpCursorToString(c);
+    String widgetText = null;
+    if(!c.moveToFirst())
+    {
+      c.close();
+      return;
     }
-    CharSequence widgetText = c.getString(c.getColumnIndex("symbol"));
-    // Construct the RemoteViews object
-    RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.stock_hawk_app_widget);
-    views.setTextViewText(R.id.appwidget_text, widgetText);
 
-    Intent intent =new Intent(context, MyStocksActivity.class);
-    PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
-    views.setOnClickPendingIntent(R.id.appwidget_text,pendingIntent);
+    widgetText = c.getString(c.getColumnIndex(("symbol")));
 
-    // Instruct the widget manager to update the widget
-    appWidgetManager.updateAppWidget(appWidgetId, views);
+    for (int appWidgetId : appWidgetIds) {
+      // Construct the RemoteViews object
+      RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.stock_hawk_app_widget);
+      views.setTextViewText(R.id.appwidget_text, widgetText);
+
+      Intent intent = new Intent(context, MyStocksActivity.class);
+      PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+      views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
+
+      // Instruct the widget manager to update the widget
+      appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
   }
 
 
@@ -63,17 +74,21 @@ public class StockIntentService extends IntentService {
 
     AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
     int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, StockHawkAppWidget.class));
+    updateAppWidget(this, appWidgetManager, appWidgetIds);
 
-    for (int appWidgetId : appWidgetIds) {
-      updateAppWidget(this, appWidgetManager, appWidgetId);
-    }
 
     Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
     StockTaskService stockTaskService = new StockTaskService(this);
     Bundle args = new Bundle();
-    if (intent.getStringExtra("tag").equals("add")){
-      args.putString("symbol", intent.getStringExtra("symbol"));
+    if(intent != null && (intent.getStringExtra("tag") != null))
+    {
+      if (intent.getStringExtra("tag").equals("add")){
+        args.putString("symbol", intent.getStringExtra("symbol"));
+      }
     }
+    else
+      return;
+
     try {//Dixit:handling the Invalid Stock Crash
       // We can call OnRunTask from the intent service to force it to run immediately instead of
       // scheduling a task.
