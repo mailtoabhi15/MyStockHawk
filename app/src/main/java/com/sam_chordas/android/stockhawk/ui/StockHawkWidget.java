@@ -14,7 +14,7 @@ import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 /**
  * Implementation of App Widget functionality.
  */
-public class StockHawkAppWidget extends AppWidgetProvider {
+public class StockHawkWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {

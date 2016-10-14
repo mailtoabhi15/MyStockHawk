@@ -20,9 +20,7 @@ import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
-import com.sam_chordas.android.stockhawk.ui.StockHawkAppWidget;
-
-import static android.R.id.input;
+import com.sam_chordas.android.stockhawk.ui.StockHawkWidget;
 
 /**
  * Created by sam_chordas on 10/1/15.
@@ -73,7 +71,7 @@ public class StockIntentService extends IntentService {
   @Override protected void onHandleIntent(final Intent intent) {
 
     AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-    int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, StockHawkAppWidget.class));
+    int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, StockHawkWidget.class));
     updateAppWidget(this, appWidgetManager, appWidgetIds);
 
 
