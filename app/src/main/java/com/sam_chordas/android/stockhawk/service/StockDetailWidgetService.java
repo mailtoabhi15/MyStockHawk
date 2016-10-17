@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Binder;
 import android.widget.AdapterView;
@@ -23,17 +24,17 @@ public class StockDetailWidgetService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new StackRemoteViewsFactory(this.getBaseContext(), intent);
+        return new StockRemoteViewsFactory(this.getBaseContext(), intent);
     }
 }
 
-class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+class StockRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private Context mContext;
     private int mAppWidgetId;
     private Cursor mCursor = null;
 
-    public StackRemoteViewsFactory(Context baseContext, Intent intent) {
+    public StockRemoteViewsFactory(Context baseContext, Intent intent) {
         mContext = baseContext;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -62,10 +63,11 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         mCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                 new String[]{ QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
                 QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
-                null,
-                null,
+                QuoteColumns.ISCURRENT + " = ?",
+                new String[]{"1"},
                 null);
 
+        String dump = DatabaseUtils.dumpCursorToString(mCursor);
         Binder.restoreCallingIdentity(identityToken);
 
     }
@@ -87,11 +89,11 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getViewTypeCount() {
-        return 0;
+        return 1;
     }
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
     @Override
     public RemoteViews getLoadingView() {
@@ -110,10 +112,17 @@ class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         if(mCursor.moveToPosition(position)) {
 
+            String dump = DatabaseUtils.dumpCursorToString(mCursor);
+
             mView = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item_quote);
             mView.setTextViewText(R.id.stock_symbol, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
             mView.setTextViewText(R.id.bid_price, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
             mView.setTextViewText(R.id.change, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE)));
+
+            final Intent fillInIntent = new Intent();
+            fillInIntent.setData(QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
+            mView.setOnClickFillInIntent(R.id.detail_widget_list,fillInIntent);
+
         }
 
         return mView;

@@ -1,10 +1,15 @@
 package com.sam_chordas.android.stockhawk.ui;
 
+import android.annotation.TargetApi;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.RemoteViews;
 
 import com.sam_chordas.android.stockhawk.R;
@@ -27,6 +32,7 @@ public class StockHawkDetailWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         //Code refrence:https://developer.android.com/guide/topics/appwidgets/index.html#implementing_collections
@@ -45,16 +51,32 @@ public class StockHawkDetailWidget extends AppWidgetProvider {
             // This adapter connects
             // to a RemoteViewsService  through the specified intent.
             // This is how you populate the data.
-            rv.setRemoteAdapter(appWidgetId, R.id.detail_widget_list, intent);
+            rv.setRemoteAdapter(R.id.detail_widget_list, intent);
 
             // The empty view is displayed when the collection has no items.
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
             rv.setEmptyView(R.id.detail_widget_list, R.id.detail_list_quotes_empty);
 
+            Intent clickIntentTemplate = new Intent(context,MyStocksActivity.class);
+            PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
+                                                        .addNextIntentWithParentStack(clickIntentTemplate)
+                                                        .getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+
+            rv.setPendingIntentTemplate(R.id.detail_widget_list,clickPendingIntentTemplate);
+
             appWidgetManager.updateAppWidget(appWidgetId, rv);
             //updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context,getClass()));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,R.id.detail_widget_list);
     }
 
     @Override
