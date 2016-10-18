@@ -20,18 +20,6 @@ import com.sam_chordas.android.stockhawk.service.StockDetailWidgetService;
  */
 public class StockHawkDetailWidget extends AppWidgetProvider {
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
-
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.stock_hawk_detail_widget);
-        views.setTextViewText(R.id.appwidget_text, widgetText);
-
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-    }
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -56,8 +44,12 @@ public class StockHawkDetailWidget extends AppWidgetProvider {
             // The empty view is displayed when the collection has no items.
             // It should be in the same layout used to instantiate the RemoteViews
             // object above.
-            rv.setEmptyView(R.id.detail_widget_list, R.id.detail_list_quotes_empty);
+            rv.setEmptyView(R.id.detail_widget_list, R.id.listview_quotes_empty);
 
+            // Here we setup the a pending intent template. Individuals items of a collection
+            // cannot setup their own pending intents, instead, the collection as a whole can
+            // setup a pending intent template, and the individual items can set a fillInIntent
+            // to create unique before on an item to item basis.
             Intent clickIntentTemplate = new Intent(context,MyStocksActivity.class);
             PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
                                                         .addNextIntentWithParentStack(clickIntentTemplate)
@@ -66,17 +58,24 @@ public class StockHawkDetailWidget extends AppWidgetProvider {
             rv.setPendingIntentTemplate(R.id.detail_widget_list,clickPendingIntentTemplate);
 
             appWidgetManager.updateAppWidget(appWidgetId, rv);
-            //updateAppWidget(context, appWidgetManager, appWidgetId);
+
         }
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        super.onReceive(context, intent);
 
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context,getClass()));
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds,R.id.detail_widget_list);
+        String action = intent.getAction();
+
+        if(MyStocksActivity.ACTION_DATA_UPDATE.equals(action)) {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
+
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.detail_widget_list);
+        }
+
+        super.onReceive(context, intent);
     }
 
     @Override

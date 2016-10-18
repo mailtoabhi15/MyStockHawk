@@ -54,6 +54,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private Cursor mCursor;
   boolean isConnected;
 
+  public static final String ACTION_DATA_UPDATE = "com.sam_chordas.android.stockhawk.ACTION_DATA_UPDATE";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -231,6 +233,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     else{
       tv.setVisibility(View.INVISIBLE);
     }
+
+    Intent widgetUpdateIntent = new Intent(ACTION_DATA_UPDATE).setPackage(mContext.getPackageName());
+    mContext.sendBroadcast(widgetUpdateIntent);
+
   }
 
   @Override

@@ -17,6 +17,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 
 import static android.R.attr.data;
+import static com.google.android.gms.common.api.Status.we;
 
 public class StockDetailWidgetService extends RemoteViewsService {
     public StockDetailWidgetService() {
@@ -119,9 +120,11 @@ class StockRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             mView.setTextViewText(R.id.bid_price, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
             mView.setTextViewText(R.id.change, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE)));
 
-            final Intent fillInIntent = new Intent();
-            fillInIntent.setData(QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
-            mView.setOnClickFillInIntent(R.id.detail_widget_list,fillInIntent);
+//            // Next, we set a fill-intent which will be used to fill-in the pending intent template
+//            // which is set on the collection view in StockHawkDetailWidget.
+//            final Intent fillInIntent = new Intent();
+//            fillInIntent.setData(QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
+//            mView.setOnClickFillInIntent(R.id.detail_widget_list,fillInIntent);
 
         }
 
