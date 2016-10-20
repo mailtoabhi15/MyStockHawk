@@ -122,9 +122,10 @@ class StockRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
 //            // Next, we set a fill-intent which will be used to fill-in the pending intent template
 //            // which is set on the collection view in StockHawkDetailWidget.
-//            final Intent fillInIntent = new Intent();
-//            fillInIntent.setData(QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
-//            mView.setOnClickFillInIntent(R.id.detail_widget_list,fillInIntent);
+            final Intent fillInIntent = new Intent();
+//          fillInIntent.setData(QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
+            fillInIntent.putExtra("symbol",(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
+            mView.setOnClickFillInIntent(R.id.detail_widget_list,fillInIntent);
 
         }
 

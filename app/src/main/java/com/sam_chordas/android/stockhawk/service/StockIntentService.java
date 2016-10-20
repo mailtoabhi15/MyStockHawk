@@ -43,7 +43,7 @@ public class StockIntentService extends IntentService {
             null,null);
     if (c == null )
       return;
-    String dump = DatabaseUtils.dumpCursorToString(c);
+//    String dump = DatabaseUtils.dumpCursorToString(c);
     String widgetText = null;
     if(!c.moveToFirst())
     {
@@ -72,6 +72,7 @@ public class StockIntentService extends IntentService {
 
     AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
     int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, StockHawkWidget.class));
+
     updateAppWidget(this, appWidgetManager, appWidgetIds);
 
 
@@ -80,14 +81,14 @@ public class StockIntentService extends IntentService {
     Bundle args = new Bundle();
     if(intent != null && (intent.getStringExtra("tag") != null))
     {
-      if (intent.getStringExtra("tag").equals("add")){
+      if (intent.getStringExtra("tag").equals("add") || intent.getStringExtra("tag").equals("history") ){
         args.putString("symbol", intent.getStringExtra("symbol"));
       }
     }
     else
       return;
 
-    try {//Dixit:handling the Invalid Stock Crash
+    try {//Dixit:try-catch for handling the Invalid Stock Crash
       // We can call OnRunTask from the intent service to force it to run immediately instead of
       // scheduling a task.
       stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));

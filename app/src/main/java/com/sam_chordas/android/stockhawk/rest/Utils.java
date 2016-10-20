@@ -48,6 +48,33 @@ public class Utils {
     return batchOperations;
   }
 
+
+  public static ArrayList quoteJsonToChartVals(String JSON){
+    ArrayList<JSONObject> jsonToChartList = new ArrayList<>();
+    JSONObject jsonObject = null;
+    JSONArray resultsArray = null;
+    try{
+      jsonObject = new JSONObject(JSON);
+      if (jsonObject != null && jsonObject.length() != 0){
+        jsonObject = jsonObject.getJSONObject("query");
+
+          resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+
+          if (resultsArray != null && resultsArray.length() != 0){
+            for (int i = 0; i < resultsArray.length(); i++){
+              jsonObject = resultsArray.getJSONObject(i);
+//                jsontoChartVals.add(truncateBidPrice(jsonObject.getString("Bid")));
+                jsonToChartList.add(jsonObject);
+
+            }
+
+        }
+      }
+    } catch (JSONException e){
+      Log.e(LOG_TAG, "String to JSON failed: " + e);
+    }
+    return jsonToChartList;
+  }
   public static String truncateBidPrice(String bidPrice){
     bidPrice = String.format("%.2f", Float.parseFloat(bidPrice));
     return bidPrice;

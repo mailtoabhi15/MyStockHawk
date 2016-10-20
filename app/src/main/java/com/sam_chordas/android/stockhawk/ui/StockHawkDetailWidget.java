@@ -50,7 +50,7 @@ public class StockHawkDetailWidget extends AppWidgetProvider {
             // cannot setup their own pending intents, instead, the collection as a whole can
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
-            Intent clickIntentTemplate = new Intent(context,MyStocksActivity.class);
+            Intent clickIntentTemplate = new Intent(context,MyStockDetailActivity.class);
             PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
                                                         .addNextIntentWithParentStack(clickIntentTemplate)
                                                         .getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
