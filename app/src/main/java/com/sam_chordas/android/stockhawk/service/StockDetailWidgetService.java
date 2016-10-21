@@ -125,7 +125,7 @@ class StockRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             final Intent fillInIntent = new Intent();
 //          fillInIntent.setData(QuoteProvider.Quotes.withSymbol(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
             fillInIntent.putExtra("symbol",(mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL))));
-            mView.setOnClickFillInIntent(R.id.detail_widget_list,fillInIntent);
+            mView.setOnClickFillInIntent(R.id.detail_widget_list_item,fillInIntent);
 
         }
 

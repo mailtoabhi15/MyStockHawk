@@ -94,6 +94,7 @@ public class StockIntentService extends IntentService {
       stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
     }
     catch (Exception e){
+        e.printStackTrace();
       //DIXIT-IMP:refernce from: http://stackoverflow.com/a/28318124
       Handler handler=new Handler(Looper.getMainLooper());
       handler.post(new Runnable() {

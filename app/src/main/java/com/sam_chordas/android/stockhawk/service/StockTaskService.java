@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.RemoteException;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.github.mikephil.charting.data.Entry;
@@ -211,21 +213,24 @@ public class StockTaskService extends GcmTaskService {
                 jsonToChartList = Utils.quoteJsonToChartVals(getResponse);
 
                 List<Entry> entries = new ArrayList<Entry>();
+                int i=0;
                 for (JSONObject jsonToChartListItem : jsonToChartList) {
                     try {
                         String date = jsonToChartListItem.getString("Date");
                         Float closeBid = Float.parseFloat(jsonToChartListItem.getString("Close"));
 
 
-                        entries.add(new Entry(1, closeBid));
+                        entries.add(new Entry(i++,closeBid));
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                //Setting LocalBraodCast manager for Sending Data Back from IntentService to the Activity
+                //Ref: https://developer.android.com/training/run-background-service/report-status.html#ReceiveStatus
                 Intent in = new Intent(ACTION_HISTORY);
-                in.putExtra("history", (Parcelable) entries);
-                mContext.sendBroadcast(in);
+                in.putExtra("history",(ArrayList<? extends Parcelable>) entries);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(in);
 
             } catch (IOException e) {
                 result = GcmNetworkManager.RESULT_FAILURE;

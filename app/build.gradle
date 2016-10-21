@@ -17,6 +17,9 @@ android {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
+    debug {
+      applicationIdSuffix 'MyStockHawk'
+    }
   }
 }
 
@@ -34,5 +37,5 @@ dependencies {
   compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
     transitive = true
   }
-  compile 'org.tinygroup:org.tinygroup.lineChart:2.2.0'
+  compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
 }

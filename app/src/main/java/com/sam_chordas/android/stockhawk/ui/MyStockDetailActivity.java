@@ -3,21 +3,29 @@ package com.sam_chordas.android.stockhawk.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
+import com.sam_chordas.android.stockhawk.service.StockTaskService;
 
 import java.util.List;
+
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.ACTION_HISTORY;
 
 
 public class MyStockDetailActivity extends AppCompatActivity {
@@ -27,19 +35,24 @@ public class MyStockDetailActivity extends AppCompatActivity {
     private Intent mServiceIntent;
     List<Entry> mEntries;
     LineChart mChart;
+    HistoryReceiver mHistoryReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
 
+        mHistoryReceiver = new HistoryReceiver();
 
         setContentView(R.layout.activity_my_stock_detail);
+
         mChart = (LineChart) findViewById(R.id.linechart);
 
         Intent fillintent = getIntent();
         String symbol = fillintent.getStringExtra("symbol");
 
+        TextView tv = (TextView)findViewById(R.id.stock_symbol_graph);
+        tv.setText(symbol);
 
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -62,6 +75,17 @@ public class MyStockDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        IntentFilter mHistoryIntentFilter = new IntentFilter(StockTaskService.ACTION_HISTORY);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mHistoryReceiver,
+                mHistoryIntentFilter);
+
+    }
 
     public class HistoryReceiver extends BroadcastReceiver{
 
@@ -69,15 +93,30 @@ public class MyStockDetailActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
 
             Bundle bundle = intent.getExtras();
-            mEntries= bundle.getParcelable("history");
+            mEntries= bundle.getParcelableArrayList("history");
 
             LineDataSet lineDataSet = new LineDataSet(mEntries,"graph");
 
             LineData lineData = new LineData(lineDataSet);
+            mChart.setDescription("One Month Data");
+
+            XAxis xAxis = mChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setTextSize(10f);
+            xAxis.setTextColor(Color.YELLOW);
+
+            mChart.animateXY(750, 750);
             mChart.setData(lineData);
             mChart.invalidate();
 
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mHistoryReceiver);
+        super.onDestroy();
     }
 }
