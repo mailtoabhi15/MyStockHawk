@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "1084420268559",
+    "project_id": "stock-hawk-b1f00"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084420268559:android:143ba334c8f86887",
+        "android_client_info": {
+          "package_name": "com.sam_chordas.android.stockhawk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3wE7b8Zt_sdaBLqJI7DQ9KC-hzJGJYr4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
