@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Binder;
 import android.widget.AdapterView;
@@ -113,12 +114,18 @@ class StockRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         if(mCursor.moveToPosition(position)) {
 
-            String dump = DatabaseUtils.dumpCursorToString(mCursor);
+//            String dump = DatabaseUtils.dumpCursorToString(mCursor);
 
             mView = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item_quote);
             mView.setTextViewText(R.id.stock_symbol, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
             mView.setTextViewText(R.id.bid_price, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
             mView.setTextViewText(R.id.change, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE)));
+
+            if (mCursor.getInt(mCursor.getColumnIndex(QuoteColumns.ISUP)) == 1) {
+                mView.setInt(R.id.change, "setBackgroundColor", Color.GREEN);
+            } else {
+                mView.setInt(R.id.change, "setBackgroundColor", Color.RED);
+            }
 
 //            // Next, we set a fill-intent which will be used to fill-in the pending intent template
 //            // which is set on the collection view in StockHawkDetailWidget.

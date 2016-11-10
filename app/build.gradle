@@ -38,4 +38,5 @@ dependencies {
     transitive = true
   }
   compile 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+  compile 'com.facebook.stetho:stetho:1.4.1'
 }
