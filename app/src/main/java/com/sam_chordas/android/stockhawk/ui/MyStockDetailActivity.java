@@ -98,7 +98,7 @@ public class MyStockDetailActivity extends AppCompatActivity {
             LineDataSet lineDataSet = new LineDataSet(mEntries,"graph");
 
             LineData lineData = new LineData(lineDataSet);
-            mChart.setDescription("One Month Data");
+            mChart.setDescription(getString(R.string.stock_history_data));
 
             XAxis xAxis = mChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
